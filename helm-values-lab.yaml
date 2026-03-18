@@ -56,7 +56,7 @@ alertmanager:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 3Gi
+              storage: 3GiB
 
 nodeExporter:
   enabled: true
@@ -70,12 +70,3 @@ prometheusOperator:
 
 defaultRules:
   create: true
-  rules:
-    alertmanager: true
-    general: true
-    k8s: true
-    kubelet: true
-    kubeStateMetrics: true
-    node: true
-    prometheus: true
-    prometheusOperator: true

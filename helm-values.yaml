@@ -12,7 +12,7 @@ prometheus:
   prometheusSpec:
     # Retention settings
     retention: 7d                    # Keep metrics for 7 days
-    retentionSize: "50GiB"          # Or until storage reaches 50GiB
+    retentionSize: "50Gi"           # Or until storage reaches 50Gi
     
     # Image configuration
     image:
@@ -165,7 +165,7 @@ alertmanager:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 50GiB
+              storage: 50Gi
     
     # Resource limits
     resources:

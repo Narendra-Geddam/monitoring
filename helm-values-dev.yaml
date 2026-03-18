@@ -6,7 +6,7 @@ prometheus:
   enabled: true
   prometheusSpec:
     retention: 2d
-    retentionSize: "5GiB"
+    retentionSize: "5Gi"
     resources:
       requests:
         cpu: 100m
@@ -20,7 +20,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 10GiB
+              storage: 10Gi
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
 
@@ -29,7 +29,7 @@ grafana:
   adminPassword: admin123
   persistence:
     enabled: true
-    size: 3GiB
+    size: 3Gi
   resources:
     requests:
       cpu: 50m
@@ -47,7 +47,7 @@ alertmanager:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 3GiB
+              storage: 3Gi
 
 nodeExporter:
   enabled: true

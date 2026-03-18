@@ -214,7 +214,7 @@ show_section "Access Services"
 
 # Check if lab environment (NodePort configured)
 if [ "$VALUES_FILE" = "helm-values-lab.yaml" ]; then
-    echo -e "${GREEN}🚀 Lab Environment - NodePort Access (No Port-Forward Needed!)${NC}"
+    echo -e "${GREEN}🚀 Lab Environment - NodePort Access${NC}"
     echo ""
     
     NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')

@@ -32,6 +32,8 @@ prometheus:
     # Storage configuration (Persistent Volume)
     storageSpec:
       volumeClaimTemplate:
+        metadata:
+          name: prom-storage
         spec:
           accessModes: ["ReadWriteOnce"]
           # storageClassName: "fast-ssd"    # Uncomment to use specific storage class

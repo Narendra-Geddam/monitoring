@@ -16,6 +16,8 @@ prometheus:
         memory: 1Gi
     storageSpec:
       volumeClaimTemplate:
+        metadata:
+          name: prom-storage
         spec:
           accessModes: ["ReadWriteOnce"]
           resources:

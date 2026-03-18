@@ -25,6 +25,8 @@ prometheus:
     # Local-path storage (lab environment)
     storageSpec:
       volumeClaimTemplate:
+        metadata:
+          name: prom-storage
         spec:
           storageClassName: "local-path"  # or "hostpath", "rancher-local-path"
           accessModes: ["ReadWriteOnce"]

@@ -36,14 +36,23 @@
 
 ### 1️⃣ Auto-Detect Your Cluster
 
-Run the environment detection script to automatically identify your cluster type and configure storage:
+Run the environment detection script to automatically identify your cluster type and configure storage. The script will even prompt to start the installation immediately:
 
 ```bash
 chmod +x detect-environment.sh
 ./detect-environment.sh
 ```
 
-This will generate an appropriate `helm-values-<TYPE>.yaml` file based on your environment.
+**What happens:**
+- ✓ Auto-detects cluster type (EKS/GKE/AKS/Lab/Minikube)
+- ✓ Discovers available storage classes
+- ✓ Installs local-path provisioner if needed (lab environments)
+- ✓ Generates environment-specific values file
+- ✓ Optionally starts installation automatically
+
+**When prompted:** Just press `Enter` or type `y` to start installation!
+
+### Alternative: Manual Installation
 
 ### 2️⃣ Lab & On-Premises (No CSI)
 

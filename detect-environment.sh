@@ -383,8 +383,34 @@ esac
 echo ""
 echo -e "${YELLOW}Next Steps:${NC}"
 echo -e "  1. Review values file: ${GREEN}cat $VALUES_FILE${NC}"
-echo -e "  2. Update install script: ${GREEN}sed -i 's/helm-values.yaml/$VALUES_FILE/g' install-helm-prometheus-grafana.sh${NC}"
-echo -e "  3. Install: ${GREEN}./install-helm-prometheus-grafana.sh${NC}"
+echo -e "  2. Start installation: ${GREEN}./install-helm-prometheus-grafana.sh $VALUES_FILE${NC}"
 echo ""
 echo -e "${GREEN}✓ Configuration file created: $VALUES_FILE${NC}"
 echo ""
+
+# ============================================================================
+# Auto-start installation
+# ============================================================================
+echo -e "${YELLOW}🚀 Ready to install Prometheus & Grafana?${NC}"
+read -p "Start installation now? (y/n) [default: y]: " -r AUTO_INSTALL
+AUTO_INSTALL=${AUTO_INSTALL:-y}
+
+if [[ "$AUTO_INSTALL" =~ ^[Yy]$ ]]; then
+    echo ""
+    echo -e "${BLUE}Starting Helm installation...${NC}"
+    echo ""
+    
+    if [ ! -f "install-helm-prometheus-grafana.sh" ]; then
+        echo -e "${RED}✗ install-helm-prometheus-grafana.sh not found${NC}"
+        echo -e "${YELLOW}Make sure you're in the project directory${NC}"
+        exit 1
+    fi
+    
+    chmod +x install-helm-prometheus-grafana.sh
+    ./install-helm-prometheus-grafana.sh "$VALUES_FILE"
+else
+    echo ""
+    echo -e "${YELLOW}Installation skipped. To proceed manually, run:${NC}"
+    echo -e "  ${GREEN}./install-helm-prometheus-grafana.sh $VALUES_FILE${NC}"
+    echo ""
+fi

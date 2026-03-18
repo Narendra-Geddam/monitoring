@@ -1,17 +1,18 @@
-# Quick Start Helm Values - Minimal configuration for testing
-# Use this for dev/test environments with reduced resource requirements
+# Development/Testing Configuration
+# Low resource requirements, temporary storage
+# Perfect for quick testing and development
 
 prometheus:
   enabled: true
   prometheusSpec:
-    retention: 3d
-    retentionSize: "10GiB"
+    retention: 2d
+    retentionSize: "5GiB"
     resources:
       requests:
         cpu: 100m
         memory: 512Mi
       limits:
-        cpu: 500m
+        cpu: 250m
         memory: 1Gi
     storageSpec:
       volumeClaimTemplate:
@@ -28,13 +29,13 @@ grafana:
   adminPassword: admin123
   persistence:
     enabled: true
-    size: 5GiB
+    size: 3GiB
   resources:
     requests:
       cpu: 50m
       memory: 64Mi
     limits:
-      cpu: 250m
+      cpu: 200m
       memory: 256Mi
 
 alertmanager:
@@ -46,7 +47,7 @@ alertmanager:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
+              storage: 3GiB
 
 nodeExporter:
   enabled: true
@@ -60,12 +61,8 @@ prometheusOperator:
 
 defaultRules:
   create: true
-  rules:
-    alertmanager: true
-    general: true
-    k8s: true
-    kubelet: true
-    kubeStateMetrics: true
-    node: true
-    prometheus: true
-    prometheusOperator: true
+
+# Note: For EmptyDir (non-persistent) testing, modify storageSpec sections:
+# emptyDir:
+#   sizeLimit: 10Gi
+# This will lose data on pod restart but is useful for quick tests

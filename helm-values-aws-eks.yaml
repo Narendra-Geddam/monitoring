@@ -6,7 +6,7 @@ prometheus:
   enabled: true
   prometheusSpec:
     retention: 7d
-    retentionSize: "50Gi"
+    retentionSize: "50GiB"
     
     resources:
       requests:
@@ -26,7 +26,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 50Gi
+              storage: 50GiB
     
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
@@ -38,7 +38,7 @@ grafana:
   persistence:
     enabled: true
     storageClassName: "gp3"  # AWS EBS gp3
-    size: 10Gi
+    size: 10GiB
   
   resources:
     requests:

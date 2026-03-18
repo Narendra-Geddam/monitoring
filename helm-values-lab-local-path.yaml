@@ -6,7 +6,7 @@ prometheus:
   enabled: true
   prometheusSpec:
     retention: 7d
-    retentionSize: "30Gi"
+    retentionSize: "10GiB"
     
     resources:
       requests:
@@ -24,7 +24,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 30Gi
+              storage: 10GiB
     
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
@@ -36,7 +36,7 @@ grafana:
   persistence:
     enabled: true
     storageClassName: "local-path"
-    size: 5Gi
+    size: 5GiB
   
   resources:
     requests:

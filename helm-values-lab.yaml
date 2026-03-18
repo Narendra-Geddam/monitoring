@@ -58,32 +58,17 @@ grafana:
       memory: 512Mi
 
 alertmanager:
-  enabled: true
-  
-  # Lab: Expose via NodePort (no port-forward needed)
-  service:
-    type: NodePort
-    nodePort: 30093
-  
-  alertmanagerSpec:
-    storage:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: "local-path"
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 3Gi
+  enabled: false
 
 nodeExporter:
-  enabled: true
+  enabled: false
 
 kubeStateMetrics:
-  enabled: true
+  enabled: false
 
 prometheusOperator:
   enabled: true
   manageCrds: true
 
 defaultRules:
-  create: true
+  create: false

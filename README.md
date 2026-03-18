@@ -29,13 +29,13 @@ chmod +x install.sh
 
 ## 📦 Files
 
-| File | Purpose |
-|------|---------|
-| **install.sh** | 🚀 Smart installation (auto-detects environment, installs storage if needed) |
-| **helm-values.yaml** | ⚙️ Production (50GiB, 7-day retention) |
-| **helm-values-lab.yaml** | 🔬 Lab/On-Premises (10GiB, local-path) |
-| **helm-values-dev.yaml** | 🧪 Development (5GiB) |
-| **helm-manage.sh** | 🛠️ CLI for status, logs, passwords |
+| File | Purpose | Components |
+|------|---------|------------|
+| **install.sh** | 🚀 Smart installation | Auto-detects & installs storage |
+| **helm-values.yaml** | ⚙️ Production (50Gi, 7-day) | Full: Prometheus + Grafana + AlertManager + Node Exporter + Kube-State |
+| **helm-values-lab.yaml** | 🔬 Lab (10Gi, NodePort) | **Minimal**: Prometheus + Grafana only |
+| **helm-values-dev.yaml** | 🧪 Dev (5Gi) | **Minimal**: Prometheus + Grafana only |
+| **helm-manage.sh** | 🛠️ CLI tool | Status, logs, passwords |
 
 ## 🌐 Access Services
 
@@ -82,27 +82,30 @@ kubectl port-forward -n monitoring svc/alertmanager-operated 9093:9093
 
 ## 🔧 Environments
 
-### Lab / On-Premises
+### Lab / On-Premises (MINIMAL)
 ```bash
 ./install.sh helm-values-lab.yaml
 ```
-✓ Installs local-path provisioner  
-✓ 10GiB storage  
-✓ **NodePort exposure** (Grafana:30300, Prometheus:30090, AlertManager:30093)
+**Components**: Prometheus + Grafana only  
+✓ 10Gi storage, local-path  
+✓ NodePort: Grafana:30300, Prometheus:30090  
+✓ Perfect for testing
 
-### AWS EKS / GCP GKE / Azure AKS
-```bash
-./install.sh helm-values.yaml
-```
-✓ Uses cloud provider storage  
-✓ 50GiB, 7-day retention
-
-### Development
+### Development (MINIMAL)
 ```bash
 ./install.sh helm-values-dev.yaml
 ```
-✓ Minimal resources  
-✓ 5GiB storage
+**Components**: Prometheus + Grafana only  
+✓ 5Gi storage, minimal resources  
+✓ For quick dev cycles
+
+### Production (FULL STACK)
+```bash
+./install.sh helm-values.yaml
+```
+**Components**: Prometheus, Grafana, AlertManager, Node Exporter, Kube-State-Metrics  
+✓ 50Gi storage, 7-day retention  
+✓ Enterprise HA setup
 
 ## ❌ Troubleshooting
 

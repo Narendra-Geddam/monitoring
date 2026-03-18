@@ -1,0 +1,71 @@
+# Quick Start Helm Values - Minimal configuration for testing
+# Use this for dev/test environments with reduced resource requirements
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 3d
+    retentionSize: "10Gi"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+grafana:
+  enabled: true
+  adminPassword: admin123
+  persistence:
+    enabled: true
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+prometheusOperator:
+  enabled: true
+  manageCrds: true
+
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    general: true
+    k8s: true
+    kubelet: true
+    kubeStateMetrics: true
+    node: true
+    prometheus: true
+    prometheusOperator: true

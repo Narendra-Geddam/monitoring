@@ -1,0 +1,268 @@
+# Kube-Prometheus-Stack Helm Values
+# For kube-prometheus-stack chart by Prometheus Community
+# Chart: https://github.com/prometheus-community/helm-charts
+# Documentation: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+
+# ============================================================================
+# Prometheus Configuration
+# ============================================================================
+prometheus:
+  enabled: true
+  
+  prometheusSpec:
+    # Retention settings
+    retention: 7d                    # Keep metrics for 7 days
+    retentionSize: "50Gi"           # Or until storage reaches 50Gi
+    
+    # Image configuration
+    image:
+      repository: prom/prometheus
+      tag: latest
+      pullPolicy: IfNotPresent
+    
+    # Resource requests and limits
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    
+    # Storage configuration (Persistent Volume)
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          # storageClassName: "fast-ssd"    # Uncomment to use specific storage class
+          resources:
+            requests:
+              storage: 50Gi
+    
+    # Enable service monitor discovery
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    
+    # Additional external labels
+    externalLabels:
+      cluster: "kubernetes-cluster"
+      environment: "production"
+    
+    # Optional: Additional scrape configs (YAML format)
+    additionalScrapeConfigs: []
+      # - job_name: 'external-service'
+      #   static_configs:
+      #     - targets: ['external-service.example.com:8080']
+
+  # Prometheus Service
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 9090
+    # For LoadBalancer or NodePort:
+    # type: LoadBalancer
+    # nodePort: 30090
+    annotations: {}
+      # cloud.google.com/load-balancer-type: "Internal"
+
+# ============================================================================
+# Grafana Configuration
+# ============================================================================
+grafana:
+  enabled: true
+  
+  # Default admin credentials
+  adminUser: admin
+  adminPassword: admin123              # ⚠️ CHANGE IN PRODUCTION!
+  
+  # Image
+  image:
+    repository: grafana/grafana
+    tag: latest
+    pullPolicy: IfNotPresent
+  
+  # Persistence for dashboards and data
+  persistence:
+    enabled: true
+    storageClassName: null             # Use default storage class
+    size: 10Gi
+    # For specific storage class:
+    # storageClassName: "fast-ssd"
+  
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  
+  # Data sources configuration
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus-operated:9090
+          access: proxy
+          isDefault: true
+          jsonData:
+            timeInterval: 15s
+  
+  # Dashboard provisioning
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          updateIntervalSeconds: 10
+          allowUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+  
+  # Pre-installed dashboards (community dashboards)
+  dashboards:
+    default:
+      # These will be automatically imported
+      kubernetes-cluster:
+        url: https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/dashboards/kubernetes-cluster.json
+      kubernetes-kubelet:
+        url: https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/dashboards/kubernetes-kubelet.json
+  
+  # Service
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+    # For external access:
+    # type: LoadBalancer
+    # nodePort: 30300
+    annotations: {}
+  
+  # Environment variables
+  env:
+    GF_SECURITY_ADMIN_PASSWORD: admin123
+    GF_INSTALL_PLUGINS: "grafana-clock-panel"
+
+# ============================================================================
+# AlertManager Configuration
+# ============================================================================
+alertmanager:
+  enabled: true
+  
+  alertmanagerSpec:
+    # Storage for alert history
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    
+    # Resource limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+  
+  # AlertManager service
+  service:
+    type: ClusterIP
+    port: 9093
+
+# ============================================================================
+# Node Exporter Configuration
+# ============================================================================
+nodeExporter:
+  enabled: true
+
+# ============================================================================
+# Kube-State-Metrics Configuration
+# ============================================================================
+kubeStateMetrics:
+  enabled: true
+
+# ============================================================================
+# Prometheus Operator Configuration
+# ============================================================================
+prometheusOperator:
+  enabled: true
+  manageCrds: true
+
+# ============================================================================
+# Kubelet Configuration
+# ============================================================================
+kubelet:
+  enabled: true
+  namespace: kube-system
+
+# ============================================================================
+# Default Rules (Alerts)
+# ============================================================================
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: true
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserverAvailability: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeSchedulerAlerting: true
+    kubeStateMetrics: true
+    network: true
+    node: true
+    prometheus: true
+    prometheusOperator: true
+
+# ============================================================================
+# Service Monitor Labels
+# ============================================================================
+# These labels help Prometheus discover services to monitor
+prometheus:
+  prometheusSpec:
+    # Label selectors for service discovery
+    # Prometheus will scrape any ServiceMonitor with these labels
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    podMonitorSelector: {}
+    podMonitorNamespaceSelector: {}
+    ruleSelector: {}
+    ruleNamespaceSelector: {}
+
+# ============================================================================
+# Additional Notes
+# ============================================================================
+# 
+# To deploy with custom values:
+#   helm install prometheus prometheus-community/kube-prometheus-stack \
+#     -n monitoring -f helm-values.yaml
+#
+# To update/upgrade:
+#   helm upgrade prometheus prometheus-community/kube-prometheus-stack \
+#     -n monitoring -f helm-values.yaml
+#
+# To see current values:
+#   helm values prometheus -n monitoring
+#
+# For more options, see:
+#   helm show values prometheus-community/kube-prometheus-stack

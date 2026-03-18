@@ -1,0 +1,75 @@
+# Emergency/Testing - EmptyDir Storage
+# WARNING: Data is LOST when pod restarts!
+# Use ONLY for testing, development, or short-lived deployments
+# 
+# When pod is restarted (due to updates, resource limits, etc.), ALL data is deleted
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 2d  # Reduced retention
+    
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    
+    # EmptyDir - NOT PERSISTENT
+    emptyDir:
+      sizeLimit: 20Gi
+    
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    
+    # Disable replicas for emptyDir (only 1 instance)
+    replicas: 1
+
+grafana:
+  enabled: true
+  adminPassword: admin123
+  
+  # NO persistence with emptyDir
+  persistence:
+    enabled: false
+  
+  # Single replica only
+  replicas: 1
+  
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    # EmptyDir for AlertManager
+    emptyDir:
+      sizeLimit: 5Gi
+    
+    replicas: 1
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+prometheusOperator:
+  enabled: true
+  manageCrds: true
+
+defaultRules:
+  create: true
+  rules:
+    general: true
+    k8s: true
+    kubelet: true
+    node: true
+    prometheus: true

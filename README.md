@@ -17,93 +17,360 @@
 
 </div>
 
+<br>
+
+## 📋 Table of Contents
+
+- [🎯 Overview](#overview)
+- [✨ Features](#features)  
+- [📦 Files Included](#files-included)
+- [🌍 Environment-Specific Setup](#environment-specific-setup)
+- [🚀 Quick Start](#quick-start)
+- [⚙️ Configuration](#configuration)
+- [🔧 Management](#management)
+- [📚 Documentation](#documentation)
+
+<br>
+
+## 🌍 Environment-Specific Setup
+
+### 1️⃣ Auto-Detect Your Cluster
+
+Run the environment detection script to automatically identify your cluster type and configure storage:
+
+```bash
+chmod +x detect-environment.sh
+./detect-environment.sh
+```
+
+This will generate an appropriate `helm-values-<TYPE>.yaml` file based on your environment.
+
+### 2️⃣ Lab & On-Premises (No CSI)
+
+For clusters **without CSI drivers** (typical in lab/on-premises):
+
+```bash
+# Install local-path provisioner
+chmod +x install-local-path-provisioner.sh
+./install-local-path-provisioner.sh
+
+# Install monitoring with lab configuration
+./install-helm-prometheus-grafana.sh helm-values-lab-local-path.yaml
+```
+
+**Storage:** Local-path provisioner  
+**Location:** `/var/lib/rancher/local-path-provisioner/`  
+**Best for:** Lab, single-node, on-premises clusters
+
+### 3️⃣ AWS EKS
+
+```bash
+# Install with EKS configuration (uses gp3 EBS volumes)
+./install-helm-prometheus-grafana.sh helm-values-aws-eks.yaml
+```
+
+**Storage:** AWS EBS gp3 (dynamic provisioning)  
+**Best for:** AWS EKS production clusters
+
+### 4️⃣ Quick Dev/Test
+
+```bash
+# Install with EmptyDir storage (fast, non-persistent)
+./install-helm-prometheus-grafana.sh helm-values-emptydir-dev.yaml
+```
+
+**Storage:** EmptyDir (in-memory)  
+**⚠️ Note:** Data lost on pod restart  
+**Best for:** Quick testing, development
+
+<br>
+
 ## 🚀 Quick Start
 
-```bash
-chmod +x install-helm-prometheus-grafana.sh
-./install-helm-prometheus-grafana.sh
-```
+- [🎯 Overview](#overview)
+- [✨ Features](#features)  
+- [📦 Files Included](#files-included)
+- [🚀 Quick Start](#quick-start)
+- [⚙️ Configuration](#configuration)
+- [🔧 Management](#management)
+- [📚 Documentation](#documentation)
 
-## 🌐 Access Services
+<br>
 
-**Via Port-Forward:**
-```bash
-kubectl port-forward -n monitoring svc/prometheus-kube-prom-prometheus 9090:9090
-kubectl port-forward -n monitoring svc/grafana 3000:80
-```
+## 🎯 Overview
 
-- 📊 Prometheus: http://localhost:9090
-- 📈 Grafana: http://localhost:3000 (admin/admin123)
-- 🔔 AlertManager: http://localhost:9093
+This repository provides an **automated, production-ready deployment** of **Prometheus** and **Grafana** on Kubernetes using **Helm charts**. Perfect for comprehensive monitoring and observability across your entire infrastructure.
+
+**Includes:** Prometheus, Grafana, AlertManager, Node Exporter, and Kube-State-Metrics
+
+<br>
+
+## ✨ Features
+
+- ✅ **Automated One-Command Setup** - Intelligent prerequisite checking
+- ✅ **Production Ready** - High availability configuration included
+- ✅ **Easy Management** - CLI tool for common operations
+- ✅ **Security First** - RBAC, TLS/SSL support built-in
+- ✅ **Full Stack Monitoring** - Kubernetes, nodes, pods, custom metrics
+- ✅ **Scalable** - Multi-replica support, load balancing
+
+<br>
 
 ## 📦 Files Included
 
 | File | Purpose |
 |------|---------|
-| `install-helm-prometheus-grafana.sh` | Installation script |
-| `helm-values.yaml` | Production configuration |
-| `helm-values-quickstart.yaml` | Development configuration |
-| `helm-manage.sh` | Management commands |
-| `HELM-PRODUCTION-GUIDE.md` | Production guide |
-| `README.backup.md` | Backup documentation |
+| `install-local-path-provisioner.sh` | 🔧 Lab: Install local-path provisioner & set as default |
+| `install-helm-prometheus-grafana.sh` | 🚀 Main automated installation script |
+| `detect-environment.sh` | 🔍 Auto-detect cluster type and configure storage |
+| `helm-values.yaml` | ⚙️ Production-grade configuration |
+| `helm-values-lab-local-path.yaml` | 📂 Lab environment (local-path storage) |
+| `helm-values-aws-eks.yaml` | ☁️ AWS EKS configuration (EBS gp3) |
+| `helm-values-emptydir-dev.yaml` | 🚀 Quick dev/test (EmptyDir, non-persistent) |
+| `helm-values-quickstart.yaml` | ⚡ Quick start with reduced resources |
+| `helm-manage.sh` | 🛠️ Management and troubleshooting CLI |
+| `HELM-PRODUCTION-GUIDE.md` | 📚 Comprehensive production guide |
+| `TROUBLESHOOTING-PVC.md` | 🔍 PVC binding troubleshooting guide |
 
-## ⚙️ Configuration
+## Quick Start
 
-**Production:** Use `helm-values.yaml` (50Gi storage, 7-day retention)
-**Development:** Use `helm-values-quickstart.yaml` (10Gi storage, 3-day retention)
-
-## 🛠️ Management
+### Prerequisites
 
 ```bash
-./helm-manage.sh status         # View status
-./helm-manage.sh pods           # List pods
-./helm-manage.sh logs prometheus # View logs
-./helm-manage.sh update-password "new-pass" # Change password
-./helm-manage.sh help           # Full help
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+# Install Helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# Verify connection
+kubectl cluster-info
 ```
 
-## 🏗️ Components
+### Installation
 
-- ✅ Prometheus (StatefulSet)
-- ✅ Grafana (Deployment)
-- ✅ AlertManager (StatefulSet)
-- ✅ Node Exporter (DaemonSet)
-- ✅ Kube-State-Metrics (Deployment)
-- ✅ Prometheus Operator (Deployment)
+**Option 1: Auto-detect environment** (Recommended)
+```bash
+chmod +x detect-environment.sh
+./detect-environment.sh
+./install-helm-prometheus-grafana.sh
+```
 
-## 🔐 Security
+**Option 2: Manual environment selection**
+```bash
+# Lab/On-premises (requires local-path provisioner)
+chmod +x install-local-path-provisioner.sh
+./install-local-path-provisioner.sh
+./install-helm-prometheus-grafana.sh
 
-Default Grafana: `admin / admin123`
+# Or specify a values file directly
+./install-helm-prometheus-grafana.sh helm-values-lab-local-path.yaml
+./install-helm-prometheus-grafana.sh helm-values-aws-eks.yaml
+./install-helm-prometheus-grafana.sh helm-values-quickstart.yaml
+```
 
-**Change password immediately:**
+The script will:
+1. ✓ Check kubectl and helm installation
+2. ✓ Add Prometheus and Grafana Helm repositories
+3. ✓ Create monitoring namespace
+4. ✓ Install kube-prometheus-stack chart
+5. ✓ Wait for deployments to be ready
+6. ✓ Display access and credential information
+
+## 🔍 Troubleshooting
+
+### PVC Binding Issues
+
+If you see: `PersistentVolumeClaim not ready. status: Pending`
+
+**For Lab Environments:**
+```bash
+# Install local-path provisioner
+./install-local-path-provisioner.sh
+
+# Then redeploy
+helm uninstall prometheus -n monitoring
+./install-helm-prometheus-grafana.sh helm-values-lab-local-path.yaml
+```
+
+**For other issues**, see [TROUBLESHOOTING-PVC.md](TROUBLESHOOTING-PVC.md)
+
+## Access Services
+
+### Port-Forward (Development)
+
+```bash
+# Prometheus (9090)
+kubectl port-forward -n monitoring svc/prometheus-kube-prom-prometheus 9090:9090
+
+# Grafana (3000)
+kubectl port-forward -n monitoring svc/grafana 3000:80
+
+# AlertManager (9093)
+kubectl port-forward -n monitoring svc/prometheus-kube-prom-alertmanager 9093:9093
+```
+
+Then access:
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3000 (admin/admin123)
+- **AlertManager**: http://localhost:9093
+
+### LoadBalancer (Production)
+
+Edit `helm-values.yaml` to use LoadBalancer service type:
+
+```yaml
+prometheus:
+  service:
+    type: LoadBalancer
+    
+grafana:
+  service:
+    type: LoadBalancer
+```
+
+Then upgrade:
+```bash
+helm upgrade prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring -f helm-values.yaml
+```
+
+## Configuration
+
+### Production Setup
+
+Use `helm-values.yaml` with:
+- 50Gi storage for Prometheus
+- 7-day retention policy
+- Full alerting rules
+- Production resource limits
+
+### Development Setup
+
+Use `helm-values-quickstart.yaml` with:
+- 10Gi storage for Prometheus
+- 3-day retention policy
+- Reduced resources
+- Minimal rules
+
+## Management
+
+### Using helm-manage.sh
+
+```bash
+# View status
+./helm-manage.sh status
+
+# List all pods
+./helm-manage.sh pods
+
+# View logs
+./helm-manage.sh logs prometheus
+
+# Update Grafana password
+./helm-manage.sh update-password mynewpassword
+
+# Backup configuration
+./helm-manage.sh backup
+
+# Scale deployments
+./helm-manage.sh scale 3
+
+# Get help
+./helm-manage.sh help
+```
+
+### Common Helm Commands
+
+```bash
+# View release status
+helm status prometheus -n monitoring
+
+# See current values
+helm values prometheus -n monitoring
+
+# View release history
+helm history prometheus -n monitoring
+
+# Upgrade with new values
+helm upgrade prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring -f helm-values.yaml
+
+# Rollback to previous version
+helm rollback prometheus 1 -n monitoring
+
+# Uninstall release
+helm uninstall prometheus -n monitoring
+```
+
+## Monitoring and Troubleshooting
+
+```bash
+# Check pod status
+kubectl get pods -n monitoring
+
+# View pod logs
+kubectl logs -n monitoring <pod-name>
+
+# Describe pod
+kubectl describe pod -n monitoring <pod-name>
+
+# Check PVC status
+kubectl get pvc -n monitoring
+
+# View events
+kubectl get events -n monitoring --sort-by='.lastTimestamp'
+
+# Resource usage
+kubectl top pods -n monitoring
+```
+
+## What Gets Installed
+
+- **Prometheus**: Metrics collection and storage (StatefulSet)
+- **Grafana**: Visualization and dashboarding (Deployment)
+- **AlertManager**: Alert handling and routing (StatefulSet)
+- **Node Exporter**: Host metrics collection (DaemonSet)
+- **Kube-State-Metrics**: Kubernetes object metrics (Deployment)
+- **Prometheus Operator**: CRD-based configuration (Deployment)
+
+## Credentials
+
+Default Grafana credentials:
+- **Username**: admin
+- **Password**: admin123
+
+⚠️ Change password immediately in production:
 ```bash
 ./helm-manage.sh update-password "strong-secure-password"
 ```
 
 ## 📚 Documentation
 
-See `HELM-PRODUCTION-GUIDE.md` for:
-- Production best practices
-- Scaling & high availability
-- Security hardening
-- Backup & recovery
+### Core Documentation
+- **[HELM-PRODUCTION-GUIDE.md](HELM-PRODUCTION-GUIDE.md)** - Enterprise deployment, scaling, HA, security, backup
+- **[TROUBLESHOOTING-PVC.md](TROUBLESHOOTING-PVC.md)** - PVC binding issues and solutions for all environments
 
-## 🆘 Troubleshooting
+### Helper Scripts
+- **`detect-environment.sh`** - Auto-detects your cluster and generates appropriate config
+- **`helm-manage.sh`** - CLI tool for common operations (status, logs, scaling, backups)
+- **`install-local-path-provisioner.sh`** - Sets up storage for lab environments
 
-```bash
-kubectl logs -n monitoring <pod-name>
-kubectl describe pod -n monitoring <pod-name>
-kubectl get pvc -n monitoring
-```
+### Configuration Files by Environment
+- `helm-values.yaml` - Production (50Gi storage, 7-day retention)
+- `helm-values-lab-local-path.yaml` - Lab/On-premises (local-path provisioner)
+- `helm-values-aws-eks.yaml` - AWS EKS (EBS gp3 volumes)
+- `helm-values-quickstart.yaml` - Development (10Gi storage, reduced resources)
+- `helm-values-emptydir-dev.yaml` - Quick testing (non-persistent in-memory)
 
----
+## Support & Best Practices
 
-<div align="center">
+- **Lab Environments**: Run `install-local-path-provisioner.sh` first, then install with `helm-values-lab-local-path.yaml`
+- **Production**: Use `helm-values.yaml` with LoadBalancer or Ingress for external access
+- **Storage Issues**: Refer to [TROUBLESHOOTING-PVC.md](TROUBLESHOOTING-PVC.md) for detailed diagnostics
+- **Monitor Health**: Use `./helm-manage.sh status` to check deployment status
 
-### 🌟 Made with ❤️ for Kubernetes
+## Cleanup Scan Notes
 
-**⭐ Star this repository if it helped you!**
-
-[GitHub](https://github.com/Narendra-Geddam/monitoring) | [Production Guide](HELM-PRODUCTION-GUIDE.md)
-
-</div>

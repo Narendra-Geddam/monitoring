@@ -1,0 +1,81 @@
+# Lab Environment - Local-Path Storage (No CSI Drivers)
+# For on-premises Kubernetes, Minikube, or clusters without cloud provisioners
+# Uses local-path provisioner or similar local storage solutions
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 7d
+    retentionSize: "30Gi"
+    
+    resources:
+      requests:
+        cpu: 300m
+        memory: 1Gi
+      limits:
+        cpu: 500m
+        memory: 2Gi
+    
+    # Local-path storage (lab environment)
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "local-path"  # or "hostpath", "rancher-local-path"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 30Gi
+    
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+
+grafana:
+  enabled: true
+  adminPassword: admin123
+  
+  persistence:
+    enabled: true
+    storageClassName: "local-path"
+    size: 5Gi
+  
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "local-path"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 3Gi
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+prometheusOperator:
+  enabled: true
+  manageCrds: true
+
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    general: true
+    k8s: true
+    kubelet: true
+    kubeStateMetrics: true
+    node: true
+    prometheus: true
+    prometheusOperator: true

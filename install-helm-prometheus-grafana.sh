@@ -22,11 +22,16 @@ NAMESPACE="monitoring"
 RELEASE_NAME="prometheus"
 CHART_NAME="prometheus-community/kube-prometheus-stack"
 CHART_VERSION="55.0.0"  # Specify a stable version
-VALUES_FILE="helm-values.yaml"
+VALUES_FILE="${1:-helm-values.yaml}"  # Accept values file as first argument, default to helm-values.yaml
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║  Prometheus & Grafana Helm Installation Script     ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${YELLOW}📋 Configuration:${NC}"
+echo -e "   Namespace: ${GREEN}$NAMESPACE${NC}"
+echo -e "   Release: ${GREEN}$RELEASE_NAME${NC}"
+echo -e "   Values File: ${GREEN}$VALUES_FILE${NC}"
 echo ""
 
 # ============================================================================
@@ -235,17 +240,17 @@ echo ""
 
 echo -e "${YELLOW}📚 Useful Commands:${NC}"
 echo -e "  List pods:             ${GREEN}kubectl get pods -n $NAMESPACE${NC}"
-echo -e "  Pod logs:              ${GREEN}kubectl logs -n $NAMESPACE <pod-name>{{NC}"
-echo -e "  Describe pod:          ${GREEN}kubectl describe pod -n $NAMESPACE <pod-name>{{NC}"
-echo -e "  Helm release info:     ${GREEN}helm list -n $NAMESPACE{{NC}"
-echo -e "  Helm values:           ${GREEN}helm values $RELEASE_NAME -n $NAMESPACE{{NC}"
-echo -e "  Upgrade release:       ${GREEN}helm upgrade $RELEASE_NAME $CHART_NAME -n $NAMESPACE -f $VALUES_FILE{{NC}"
-echo -e "  Delete release:        ${GREEN}helm uninstall $RELEASE_NAME -n $NAMESPACE{{NC}"
+echo -e "  Pod logs:              ${GREEN}kubectl logs -n $NAMESPACE <pod-name>${NC}"
+echo -e "  Describe pod:          ${GREEN}kubectl describe pod -n $NAMESPACE <pod-name>${NC}"
+echo -e "  Helm release info:     ${GREEN}helm list -n $NAMESPACE${NC}"
+echo -e "  Helm values:           ${GREEN}helm values $RELEASE_NAME -n $NAMESPACE${NC}"
+echo -e "  Upgrade release:       ${GREEN}helm upgrade $RELEASE_NAME $CHART_NAME -n $NAMESPACE -f $VALUES_FILE${NC}"
+echo -e "  Delete release:        ${GREEN}helm uninstall $RELEASE_NAME -n $NAMESPACE${NC}"
 echo ""
 
 echo -e "${YELLOW}🔧 Additional Configuration:${NC}"
-echo -e "  Edit values:           ${GREEN}nano $VALUES_FILE{{NC}"
-echo -e "  Restart after changes: ${GREEN}helm upgrade $RELEASE_NAME $CHART_NAME -n $NAMESPACE -f $VALUES_FILE{{NC}"
+echo -e "  Edit values:           ${GREEN}nano $VALUES_FILE${NC}"
+echo -e "  Restart after changes: ${GREEN}helm upgrade $RELEASE_NAME $CHART_NAME -n $NAMESPACE -f $VALUES_FILE${NC}"
 echo ""
 
 # ============================================================================

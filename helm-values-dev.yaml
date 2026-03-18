@@ -6,7 +6,7 @@ prometheus:
   enabled: true
   prometheusSpec:
     retention: 2d
-    retentionSize: "5Gi"
+    retentionSize: "5GiB"
     resources:
       requests:
         cpu: 100m

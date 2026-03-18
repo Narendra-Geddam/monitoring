@@ -209,24 +209,55 @@ echo -e "${BLUE}💾 PVC Status:${NC}"
 kubectl get pvc -n $NAMESPACE || echo "No PVCs found"
 echo ""
 
-echo -e "${GREEN}🌐 Access Services via Port-Forwarding:${NC}"
 echo ""
-echo -e "${YELLOW}Prometheus:${NC}"
-echo -e "  ${GREEN}kubectl port-forward -n $NAMESPACE svc/prometheus-operated 9090:9090${NC}"
-echo -e "  URL: ${GREEN}http://localhost:9090${NC}"
-echo ""
+show_section "Access Services"
 
-echo -e "${YELLOW}Grafana:${NC}"
-echo -e "  ${GREEN}kubectl port-forward -n $NAMESPACE svc/grafana 3000:80${NC}"
-echo -e "  URL: ${GREEN}http://localhost:3000${NC}"
-echo -e "  Username: ${GREEN}admin${NC}"
-echo -e "  Password: ${GREEN}admin123${NC}"
-echo ""
-
-echo -e "${YELLOW}AlertManager:${NC}"
-echo -e "  ${GREEN}kubectl port-forward -n $NAMESPACE svc/alertmanager-operated 9093:9093${NC}"
-echo -e "  URL: ${GREEN}http://localhost:9093${NC}"
-echo ""
+# Check if lab environment (NodePort configured)
+if [ "$VALUES_FILE" = "helm-values-lab.yaml" ]; then
+    echo -e "${GREEN}🚀 Lab Environment - NodePort Access (No Port-Forward Needed!)${NC}"
+    echo ""
+    
+    NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="ExternalIP")].address}')
+    if [ -z "$NODE_IP" ]; then
+        NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+    fi
+    
+    echo -e "${YELLOW}Node IP: ${GREEN}$NODE_IP${NC}"
+    echo ""
+    
+    echo -e "${YELLOW}Prometheus:${NC}"
+    echo -e "  URL: ${GREEN}http://$NODE_IP:30090${NC}"
+    echo ""
+    
+    echo -e "${YELLOW}Grafana:${NC}"
+    echo -e "  URL: ${GREEN}http://$NODE_IP:30300${NC}"
+    echo -e "  Username: ${GREEN}admin${NC}"
+    echo -e "  Password: ${GREEN}admin123${NC}"
+    echo ""
+    
+    echo -e "${YELLOW}AlertManager:${NC}"
+    echo -e "  URL: ${GREEN}http://$NODE_IP:30093${NC}"
+    echo ""
+else
+    echo -e "${GREEN}🌐 Port-Forwarding Method:${NC}"
+    echo ""
+    echo -e "${YELLOW}Prometheus:${NC}"
+    echo -e "  ${GREEN}kubectl port-forward -n $NAMESPACE svc/prometheus-operated 9090:9090${NC}"
+    echo -e "  URL: ${GREEN}http://localhost:9090${NC}"
+    echo ""
+    
+    echo -e "${YELLOW}Grafana:${NC}"
+    echo -e "  ${GREEN}kubectl port-forward -n $NAMESPACE svc/grafana 3000:80${NC}"
+    echo -e "  URL: ${GREEN}http://localhost:3000${NC}"
+    echo -e "  Username: ${GREEN}admin${NC}"
+    echo -e "  Password: ${GREEN}admin123${NC}"
+    echo ""
+    
+    echo -e "${YELLOW}AlertManager:${NC}"
+    echo -e "  ${GREEN}kubectl port-forward -n $NAMESPACE svc/alertmanager-operated 9093:9093${NC}"
+    echo -e "  URL: ${GREEN}http://localhost:9093${NC}"
+    echo ""
+fi
 
 echo -e "${YELLOW}📚 Useful Commands:${NC}"
 echo -e "  Status:           ${GREEN}./helm-manage.sh status${NC}"

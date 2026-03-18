@@ -39,6 +39,18 @@ chmod +x install.sh
 
 ## 🌐 Access Services
 
+### Lab Environment (NodePort - Direct Access)
+```bash
+# Get node IP
+kubectl get nodes -o jsonpath='{.items[0].status.addresses[*].address}'
+
+# Access directly (no port-forward needed!)
+http://<NODE_IP>:30300   # Grafana (admin/admin123)
+http://<NODE_IP>:30090   # Prometheus
+http://<NODE_IP>:30093   # AlertManager
+```
+
+### Port-Forward Method (Development/Production)
 ```bash
 # Prometheus
 kubectl port-forward -n monitoring svc/prometheus-operated 9090:9090
@@ -75,7 +87,8 @@ kubectl port-forward -n monitoring svc/alertmanager-operated 9093:9093
 ./install.sh helm-values-lab.yaml
 ```
 ✓ Installs local-path provisioner  
-✓ 10GiB storage
+✓ 10GiB storage  
+✓ **NodePort exposure** (Grafana:30300, Prometheus:30090, AlertManager:30093)
 
 ### AWS EKS / GCP GKE / Azure AKS
 ```bash

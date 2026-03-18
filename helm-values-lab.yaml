@@ -4,6 +4,12 @@
 
 prometheus:
   enabled: true
+  
+  # Lab: Expose via NodePort (no port-forward needed)
+  service:
+    type: NodePort
+    nodePort: 30090
+  
   prometheusSpec:
     retention: 7d
     retentionSize: "10GiB"
@@ -33,6 +39,11 @@ grafana:
   enabled: true
   adminPassword: admin123
   
+  # Lab: Expose via NodePort (no port-forward needed)
+  service:
+    type: NodePort
+    nodePort: 30300
+  
   persistence:
     enabled: true
     storageClassName: "local-path"
@@ -48,6 +59,12 @@ grafana:
 
 alertmanager:
   enabled: true
+  
+  # Lab: Expose via NodePort (no port-forward needed)
+  service:
+    type: NodePort
+    nodePort: 30093
+  
   alertmanagerSpec:
     storage:
       volumeClaimTemplate:

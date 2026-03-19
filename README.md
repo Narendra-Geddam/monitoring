@@ -53,10 +53,10 @@ Prometheus is an open-source monitoring and alerting toolkit designed for reliab
 ┌─────────────────────────────────────┐
 │     KUBERNETES CLUSTER              │
 │                                     │
-│  Node Exporter  ← Scrapes ← ┐     │
-│  Kube-State-Metrics ← ┐      │     │
-│  Application Pods ← ┐  │      │     │
-└────────────────────┼──┼──────┼─────┘
+│  Node Exporter  ← Scrapes ←──┐      │
+│  Kube-State-Metrics ←─┐      │      │
+│  Application Pods ←┐  │      │      │
+└────────────────────┼──┼──────┼──────┘
                      │  │      │
               ┌──────┴──┴──────┴────┐
               │   PROMETHEUS        │

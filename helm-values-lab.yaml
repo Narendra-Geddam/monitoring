@@ -39,6 +39,10 @@ prometheus:
 
 grafana:
   enabled: true
+  # Toggle built-in kube-prometheus-stack Grafana dashboards.
+  # true  = install chart default dashboards
+  # false = skip chart default dashboards
+  defaultDashboardsEnabled: true
   adminPassword: admin123
   
   # Lab: Expose via NodePort (no port-forward needed)

@@ -28,7 +28,7 @@ VALUES_FILE="${1}"  # Accept values file as argument
 show_banner() {
     echo ""
     echo -e "${BLUE}╔════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║  Prometheus & Grafana - Kubernetes Installation   ║${NC}"
+    echo -e "${BLUE}║  Prometheus & Grafana - Kubernetes Installation    ║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════════════════╝${NC}"
     echo ""
 }
@@ -36,7 +36,7 @@ show_banner() {
 show_section() {
     echo ""
     echo -e "${BLUE}╔════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║  $1${NC}"
+    echo -e "${BLUE}║  $1                                                ║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════════════════╝${NC}"
     echo ""
 }

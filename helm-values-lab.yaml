@@ -63,10 +63,10 @@ alertmanager:
   enabled: false
 
 nodeExporter:
-  enabled: false
+  enabled: true
 
 kubeStateMetrics:
-  enabled: false
+  enabled: true
 
 prometheusOperator:
   enabled: true
